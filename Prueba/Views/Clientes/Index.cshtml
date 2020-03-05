@@ -1,0 +1,155 @@
+﻿@model  IEnumerable<Prueba.Models.ClienteModels>
+@{
+    ViewBag.Title = "TEST";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<head>
+
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script>
+        $("#fechacompra").datepicker();
+        function muestraPopup() {
+            let indiceDB = document.getElementById('hdIndice').value;
+            $('#ModalPopUp').modal('show');
+        }
+
+        function actualizar() {
+            let indiceDB = document.getElementById('hdIndice').value;
+            let cantidadCompras = document.getElementById('cantidadCompras').value;
+            let fechaCompra = document.getElementById('fechaCompra').value;
+            let identidad = document.getElementById('hdIdentidad').value;
+            $.ajax({
+                type: "POST",
+                url: "/Clientes/Actualizar",
+                data: '{empresa: "' + indiceDB + '", Identidad: "' + identidad + '", cantidadCompras: "' + cantidadCompras + '", fechaCompra: "' + fechaCompra + '" }',
+                contentType: "application/json; charset=utf-8",
+                dataType: "html",
+                success: function (response) {
+                    document.getElementById('hdIndice').value = '';
+                    document.getElementById('cantidadCompras').value = '';
+                    document.getElementById('fechaCompra').value = '';
+                    document.getElementById('hdIdentidad').value = '';
+                    $('#ModalPopUp').modal('hide');
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+    </script>
+</head>
+
+
+
+<h2>Index</h2>
+
+<body style="width: 100%;height:100%;">
+    @using (Html.BeginForm("Index", "Clientes"))
+    {
+        <div class="panel-body">
+            <div class="form-group">
+
+                <div class="col-md-9">
+                    <label>Identificación</label>
+                    <input type="text" name="id" />
+                    <input id="btnBuscar" type="submit" value="Buscar" class="btn btn-sm btn-success" />
+
+
+                </div>
+            </div>
+        </div>
+
+        <table class="table">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombres)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Apellidos)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Compras_Realizadas)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Ultima_Compra)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Correo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Empresa)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Estado)
+                </th>
+
+            </tr>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.Nombres)
+                        @Html.HiddenFor(modelItem => item.indiceDB, new { id = "hdIndice" })
+                        @Html.HiddenFor(modelItem => item.Identidad, new { id = "hdIdentidad" })
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Apellidos)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Compras_Realizadas)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Ultima_Compra)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Correo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Empresa)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => item.Estado)
+                    </td>
+                    <td>
+                        <input type="button" name="edit" value="Editar" onclick="muestraPopup()" />
+                    </td>
+                </tr>
+            }
+        </table>
+       
+
+
+    }
+
+    <div class="modal fade" id="ModalPopUp" role="dialog">
+        <div class="modal-dialog err-pop" style="width: 300px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button id="DivClose" type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" style="text-align:center;">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <label>Cantidad de compras</label>
+                            <input type="number" class="form-control" name="cantidadCompras" id="cantidadCompras" required autofocus>
+                        </div>
+                        <div class="col-lg-6">
+                            <label>Fecha última compra</label>
+                            <input type="date" class="form-control" name="fechacompra" id="fechaCompra">
+                        </div>
+                    </div>
+                    <br />
+                    <button class="btn btn-primary" type="submit" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-primary" type="submit" onclick="actualizar()">Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+
+
